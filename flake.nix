@@ -3,10 +3,8 @@
 
   inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-23.11;
 
-  outputs = { self, nixpkgs }: {
-
-    defaultPackage.x86_64-linux =
-      # Notice the reference to nixpkgs here.
+  outputs = { self, nixpkgs }: 
+    let drv =
       with import nixpkgs { system = "x86_64-linux"; };
       stdenv.mkDerivation {
         name = "hello";
@@ -14,6 +12,8 @@
         buildPhase = "gcc -o hello ./main.c";
         installPhase = "mkdir -p $out/bin; install -t $out/bin hello";
       };
-
+  in {
+    packages.x86_64-linux.default = drv;
+    packages.x86_64-linux.hello = drv;
   };
 }
